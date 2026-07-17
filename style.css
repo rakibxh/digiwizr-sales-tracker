@@ -1,0 +1,460 @@
+/* =========================================================
+   DIGIWIZR SALES TRACKER — STYLES
+   Brand colors: Purple #695EA9 (primary), Cyan #5AC9E8 (secondary)
+   ========================================================= */
+
+:root {
+  --purple: #695EA9;
+  --purple-dark: #564d8c;
+  --cyan: #5AC9E8;
+  --bg: #ffffff;
+  --bg-soft: #F4F4F8;
+  --text: #26232f;
+  --text-muted: #6b6878;
+  --success: #2e9e5b;
+  --success-bg: #e8f7ee;
+  --error: #d64545;
+  --error-bg: #fdecec;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 10px rgba(105, 94, 169, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  /* No bounce/overscroll so the app feels native, not like a browser page */
+  overscroll-behavior-y: none;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+button, input {
+  font-family: inherit;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ---------------------------------------------------------
+   HEADER — persistent purple bar, shown on every screen
+   --------------------------------------------------------- */
+.header {
+  background: var(--purple);
+  padding: 18px 16px 14px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  /* Room for the notch/status bar when installed full-screen */
+  padding-top: calc(18px + env(safe-area-inset-top));
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.back-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header-title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.header-business {
+  color: var(--cyan);
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.header-screen-title {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Offline banner, injected above the header when connection drops */
+.offline-banner {
+  background: var(--error);
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: none;
+}
+
+.offline-banner.visible {
+  display: block;
+}
+
+/* ---------------------------------------------------------
+   MAIN CONTENT AREA
+   --------------------------------------------------------- */
+.screen {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  padding: 20px 18px 32px;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ---------------------------------------------------------
+   TYPOGRAPHY
+   --------------------------------------------------------- */
+h1.screen-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 4px 0 18px;
+  color: var(--text);
+}
+
+p.subtext {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: -8px;
+  margin-bottom: 18px;
+}
+
+.welcome-msg {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin: 12px 0 28px;
+  color: var(--text);
+}
+
+/* ---------------------------------------------------------
+   FORM ELEMENTS
+   --------------------------------------------------------- */
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.field input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--purple);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.field input::placeholder {
+  color: #b7b3c6;
+}
+
+.field input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 4px rgba(90, 201, 232, 0.25);
+}
+
+/* ---------------------------------------------------------
+   BUTTONS
+   --------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--purple);
+  transition: transform 0.08s ease, opacity 0.15s ease;
+  text-align: center;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--purple);
+  color: #ffffff;
+  border-color: var(--purple);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: var(--purple);
+  border-color: var(--purple);
+}
+
+.btn-cyan {
+  background: var(--cyan);
+  color: #ffffff;
+  border-color: var(--cyan);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--purple);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 10px;
+  align-self: center;
+}
+
+/* ---------------------------------------------------------
+   HOME SCREEN CARDS
+   --------------------------------------------------------- */
+.home-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.home-card {
+  background: #ffffff;
+  border: 1.5px solid var(--purple);
+  border-radius: var(--radius);
+  padding: 26px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  color: var(--purple);
+  box-shadow: var(--shadow);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.home-card:active,
+.home-card:hover {
+  background: var(--bg-soft);
+  border-color: var(--cyan);
+}
+
+.home-card .icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--cyan);
+}
+
+.home-card .label {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.sync-badge {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--purple-dark);
+  background: var(--bg-soft);
+  border: 1px solid var(--cyan);
+  border-radius: 999px;
+  padding: 8px 14px;
+  display: none;
+}
+
+.sync-badge.visible {
+  display: block;
+}
+
+/* ---------------------------------------------------------
+   PRODUCT LIST (Record a Sale)
+   --------------------------------------------------------- */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.product-card {
+  border: 1.5px solid var(--purple);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--purple);
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.product-card.selected {
+  background: var(--purple);
+  color: #ffffff;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 24px 10px;
+}
+
+/* ---------------------------------------------------------
+   MESSAGES / LOADING
+   --------------------------------------------------------- */
+.message {
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.message.visible {
+  display: block;
+}
+
+.message.success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.message.error {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+.spinner-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--bg-soft);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------
+   MANAGE PRODUCTS
+   --------------------------------------------------------- */
+.simple-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.simple-list li {
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.add-product-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.add-product-row .field {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.add-product-row .btn {
+  height: 48px;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+  * {
+    transition: none !important;
+  }
+}
