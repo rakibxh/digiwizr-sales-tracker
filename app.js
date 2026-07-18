@@ -6,7 +6,7 @@
 // CONFIG
 // -----------------------------------------------------------
 // Fill this in with your deployed Apps Script /exec URL.
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyuGbPDAFD9pMHRsA-3YiNTVY7cmeaaTHEIMIls4BL7xvwGVyEBJg5zlNPIFqzckjDf/exec";
+const BACKEND_URL = "";
 
 // localStorage keys
 const LS_SHEET_ID = "digiwizr_sheetId";
@@ -216,6 +216,30 @@ async function loadProductsForSale() {
   }
 }
 
+/**
+ * Normalizes a product entry into a consistent { name, size, price }
+ * shape. The backend currently returns plain product-name strings;
+ * once the Apps Script is updated to include Size/Price columns it
+ * can return objects instead, and this keeps both cases working.
+ */
+function normalizeProduct(product) {
+  if (typeof product === "string") {
+    return { name: product, size: "", price: "" };
+  }
+  return {
+    name: product.name || product.itemName || "",
+    size: product.size || "",
+    price: product.price !== undefined && product.price !== null ? product.price : "",
+  };
+}
+
+function buildProductMetaText(product) {
+  const parts = [];
+  if (product.size) parts.push(product.size);
+  if (product.price !== "" ) parts.push(product.price);
+  return parts.join(" • ");
+}
+
 function renderProductList(products) {
   const listEl = $("saleProductList");
   listEl.innerHTML = "";
@@ -225,18 +249,32 @@ function renderProductList(products) {
     return;
   }
 
-  products.forEach((name) => {
+  products.forEach((rawProduct) => {
+    const product = normalizeProduct(rawProduct);
+    const metaText = buildProductMetaText(product);
+
     const card = document.createElement("div");
     card.className = "product-card";
-    card.textContent = name;
     card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
 
-    card.addEventListener("click", () => selectProduct(name, card));
+    const nameEl = document.createElement("div");
+    nameEl.className = "product-card-name";
+    nameEl.textContent = product.name;
+    card.appendChild(nameEl);
+
+    if (metaText) {
+      const metaEl = document.createElement("div");
+      metaEl.className = "product-card-meta";
+      metaEl.textContent = metaText;
+      card.appendChild(metaEl);
+    }
+
+    card.addEventListener("click", () => selectProduct(product.name, card));
     card.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        selectProduct(name, card);
+        selectProduct(product.name, card);
       }
     });
 
@@ -401,9 +439,24 @@ function renderManageList(products) {
     return;
   }
 
-  products.forEach((name) => {
+  products.forEach((rawProduct) => {
+    const product = normalizeProduct(rawProduct);
+    const metaText = buildProductMetaText(product);
+
     const li = document.createElement("li");
-    li.textContent = name;
+
+    const nameEl = document.createElement("div");
+    nameEl.className = "product-name";
+    nameEl.textContent = product.name;
+    li.appendChild(nameEl);
+
+    if (metaText) {
+      const metaEl = document.createElement("div");
+      metaEl.className = "product-meta";
+      metaEl.textContent = metaText;
+      li.appendChild(metaEl);
+    }
+
     listEl.appendChild(li);
   });
 }
@@ -415,6 +468,8 @@ async function handleAddProduct() {
   clearMessage(msgEl);
 
   const productName = $("newProductInput").value.trim();
+  const size = $("newProductSizeInput").value.trim();
+  const price = $("newProductPriceInput").value.trim();
   const sheetId = localStorage.getItem(LS_SHEET_ID);
 
   if (!productName) {
@@ -426,8 +481,10 @@ async function handleAddProduct() {
   btn.disabled = true;
 
   try {
-    await callBackend("addProduct", { sheetId, productName });
+    await callBackend("addProduct", { sheetId, productName, size, price });
     $("newProductInput").value = "";
+    $("newProductSizeInput").value = "";
+    $("newProductPriceInput").value = "";
     showMessage(msgEl, "Product added!", "success");
     loadProductsForManage();
   } catch (err) {
