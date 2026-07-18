@@ -12,6 +12,7 @@ const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyuGbPDAFD9pMHRsA-3
 const LS_SHEET_ID = "digiwizr_sheetId";
 const LS_BUSINESS_NAME = "digiwizr_businessName";
 const LS_PENDING_SYNC = "digiwizr_pendingSync";
+const LS_IOS_BANNER_DISMISSED = "digiwizr_iosBannerDismissed";
 
 // -----------------------------------------------------------
 // STATE
@@ -262,7 +263,15 @@ async function handleSaveSale() {
     return;
   }
 
-  const quantity = $("quantityInput").value.trim() || "1";
+  const quantityRaw = $("quantityInput").value.trim();
+  const quantity = Number(quantityRaw);
+
+  if (!quantityRaw || isNaN(quantity) || quantity <= 0) {
+    showMessage(msgEl, "Please enter a valid quantity.", "error");
+    $("quantityInput").focus();
+    return;
+  }
+
   const notes = $("notesInput").value.trim();
   const sheetId = localStorage.getItem(LS_SHEET_ID);
 
@@ -270,7 +279,7 @@ async function handleSaveSale() {
     action: "saveSale",
     sheetId,
     itemName: selectedProduct,
-    quantity,
+    quantity: quantityRaw,
     notes,
   };
 
@@ -488,10 +497,73 @@ window.addEventListener("online", () => {
 window.addEventListener("offline", updateOfflineBanner);
 
 // -----------------------------------------------------------
+// iOS SAFARI "ADD TO HOME SCREEN" BANNER
+// -----------------------------------------------------------
+/**
+ * True on iPhone/iPad/iPod. Deliberately excludes desktop Safari
+ * on macOS (which reports "Macintosh", not one of these tokens).
+ */
+function isIosDevice() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+/**
+ * True only for Safari itself on iOS — excludes Chrome, Firefox,
+ * Edge, and other browsers on iOS, which all use Safari's engine
+ * but identify themselves with their own UA tokens (CriOS, FxiOS,
+ * EdgiOS, OPiOS) and can't be "added to home screen" the same way.
+ */
+function isIosSafari() {
+  const ua = navigator.userAgent;
+  const isSafariUA = /Safari/.test(ua);
+  const isOtherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|mercury/.test(ua);
+  return isIosDevice() && isSafariUA && !isOtherBrowser;
+}
+
+/**
+ * True if the app is already running as an installed home-screen
+ * app (standalone), whether launched on iOS or via the standard
+ * PWA display-mode media query on other platforms.
+ */
+function isRunningStandalone() {
+  const iosStandalone = window.navigator.standalone === true;
+  const displayModeStandalone = window.matchMedia("(display-mode: standalone)").matches;
+  return iosStandalone || displayModeStandalone;
+}
+
+function shouldShowIosInstallBanner() {
+  if (isRunningStandalone()) return false;
+  if (!isIosSafari()) return false;
+  if (localStorage.getItem(LS_IOS_BANNER_DISMISSED) === "true") return false;
+  return true;
+}
+
+function showIosInstallBanner() {
+  const banner = $("iosInstallBanner");
+  banner.classList.add("visible");
+  document.body.classList.add("ios-banner-visible");
+}
+
+function dismissIosInstallBanner() {
+  const banner = $("iosInstallBanner");
+  banner.classList.remove("visible");
+  document.body.classList.remove("ios-banner-visible");
+  localStorage.setItem(LS_IOS_BANNER_DISMISSED, "true");
+}
+
+function initIosInstallBanner() {
+  if (shouldShowIosInstallBanner()) {
+    showIosInstallBanner();
+  }
+  $("iosBannerClose").addEventListener("click", dismissIosInstallBanner);
+}
+
+// -----------------------------------------------------------
 // APP INIT
 // -----------------------------------------------------------
 function init() {
   updateOfflineBanner();
+  initIosInstallBanner();
 
   const savedSheetId = localStorage.getItem(LS_SHEET_ID);
   const savedBusinessName = localStorage.getItem(LS_BUSINESS_NAME);
