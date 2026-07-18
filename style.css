@@ -66,6 +66,17 @@ button, input {
   padding-top: calc(18px + env(safe-area-inset-top));
 }
 
+.header-logo {
+  display: block;
+  height: 40px;
+  width: 40px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  padding: 5px;
+  object-fit: contain;
+}
+
 .header-row {
   display: flex;
   align-items: center;
@@ -185,6 +196,10 @@ p.subtext {
   font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 6px;
+}
+
+.required-mark {
+  color: var(--error);
 }
 
 .field input {
@@ -437,17 +452,102 @@ p.subtext {
 .add-product-row {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
 .add-product-row .field {
   flex: 1;
+  min-width: 0;
   margin-bottom: 0;
 }
 
 .add-product-row .btn {
   height: 48px;
+  flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   FOOTER CREDIT — appears below content on every screen
+   --------------------------------------------------------- */
+.app-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #AAAAAA;
+  padding: 10px 16px calc(14px + env(safe-area-inset-bottom));
+}
+
+.app-footer a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.app-footer a:hover,
+.app-footer a:focus {
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------
+   iOS SAFARI INSTALL BANNER
+   --------------------------------------------------------- */
+.ios-install-banner {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: var(--purple);
+  color: #ffffff;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 44px 12px 14px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  box-shadow: 0 -2px 12px rgba(38, 35, 47, 0.25);
+}
+
+.ios-install-banner.visible {
+  display: flex;
+}
+
+.ios-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.ios-banner-icon,
+.ios-banner-arrow {
+  flex-shrink: 0;
+}
+
+.ios-banner-text {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ios-banner-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  line-height: 1;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.ios-banner-close:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Keeps content clear of the fixed banner while it's showing */
+body.ios-banner-visible #app {
+  padding-bottom: 64px;
 }
 
 @media (prefers-reduced-motion: reduce) {
