@@ -12,7 +12,7 @@
 <!-- iOS: makes the app run full-screen with no browser chrome once installed -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Sales Tracker" />
+<meta name="apple-mobile-web-app-title" content="Digiwizr Sales Tracker" />
 <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
 <link rel="icon" href="icons/icon-192.png" />
@@ -30,6 +30,7 @@
        shows once a client has been set up.
        ============================================================ -->
   <header class="header">
+    <img src="icons/icon-192.png" alt="Digiwizr logo" class="header-logo" />
     <div class="header-row">
       <button id="backBtn" class="back-btn" aria-label="Back" style="display:none;">&#8592;</button>
       <h1 class="header-title">DIGIWIZR</h1>
@@ -93,8 +94,8 @@
 
     <div id="saleFormFields" style="display:none;">
       <div class="field">
-        <label for="quantityInput">Quantity</label>
-        <input type="number" id="quantityInput" min="1" placeholder="1" inputmode="numeric" />
+        <label for="quantityInput">Quantity <span class="required-mark">*</span></label>
+        <input type="number" id="quantityInput" min="1" placeholder="e.g. 2" inputmode="numeric" required />
       </div>
       <div class="field">
         <label for="notesInput">Notes (optional)</label>
@@ -142,6 +143,37 @@
     </div>
   </section>
 
+  <!-- ============================================================
+       FOOTER CREDIT — lives outside the screen toggles, so it is
+       always rendered below whichever screen is active.
+       ============================================================ -->
+  <footer class="app-footer">
+    App by <a href="https://digiwizr.com/" target="_blank" rel="noopener noreferrer">Digiwizr</a>
+  </footer>
+
+</div>
+
+<!-- ============================================================
+     iOS SAFARI "ADD TO HOME SCREEN" BANNER
+     Shown only on iOS Safari when the app is not already installed.
+     Toggled by app.js; dismissal is remembered in localStorage.
+     ============================================================ -->
+<div id="iosInstallBanner" class="ios-install-banner">
+  <div class="ios-banner-content">
+    <svg class="ios-banner-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 3v12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 7l4-4 4 4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 12v7a2 2 0 002 2h8a2 2 0 002-2v-7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="ios-banner-text">
+      Install this app: tap the Share button below then select <strong>Add to Home Screen</strong>
+    </span>
+    <svg class="ios-banner-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 4v14" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 13l6 6 6-6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <button id="iosBannerClose" class="ios-banner-close" aria-label="Dismiss install instructions">&times;</button>
 </div>
 
 <script src="app.js"></script>
