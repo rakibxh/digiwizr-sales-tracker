@@ -6,7 +6,7 @@
 // CONFIG
 // -----------------------------------------------------------
 // Fill this in with your deployed Apps Script /exec URL.
-const BACKEND_URL = "";
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyuGbPDAFD9pMHRsA-3YiNTVY7cmeaaTHEIMIls4BL7xvwGVyEBJg5zlNPIFqzckjDf/exec";
 
 // localStorage keys
 const LS_SHEET_ID = "digiwizr_sheetId";
