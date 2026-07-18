@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
+<title>Digiwizr Sales Tracker</title>
+
+<!-- PWA manifest -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#695EA9" />
+
+<!-- iOS: makes the app run full-screen with no browser chrome once installed -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Digiwizr Sales Tracker" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+
+<link rel="icon" href="icon-192.png" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Offline banner: shown/hidden by app.js when connection changes -->
+  <div id="offlineBanner" class="offline-banner">You are offline — data will sync when connected</div>
+
+  <!-- ============================================================
+       HEADER — persistent on every screen. Business name line only
+       shows once a client has been set up.
+       ============================================================ -->
+  <header class="header">
+    <div class="header-row">
+      <button id="backBtn" class="back-btn" aria-label="Back" style="display:none;">&#8592;</button>
+      <img src="logo-wide.png" alt="Digiwizr" class="header-logo" />
+    </div>
+    <div id="headerScreenTitle" class="header-screen-title" style="display:none;"></div>
+    <div id="headerBusinessName" class="header-business" style="display:none;"></div>
+  </header>
+
+  <!-- ============================================================
+       SCREEN 1 — FIRST LAUNCH SETUP
+       Only ever shown if localStorage has no sheetId saved.
+       ============================================================ -->
+  <section id="screen-setup" class="screen">
+    <p class="welcome-msg">Welcome to Digiwizr Sales Tracker</p>
+
+    <div id="setupMessage" class="message"></div>
+
+    <div class="field">
+      <label for="businessNameInput">Your Business Name</label>
+      <input type="text" id="businessNameInput" placeholder="e.g. Cedar Lane Bakery" autocomplete="off" />
+    </div>
+
+    <button id="setupBtn" class="btn btn-primary btn-block">Set Up My Account</button>
+
+    <div id="setupSpinner" class="spinner-wrap" style="display:none;">
+      <div class="spinner"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 2 — HOME
+       ============================================================ -->
+  <section id="screen-home" class="screen">
+    <div class="home-cards">
+      <div id="cardSale" class="home-card" role="button" tabindex="0">
+        <div class="icon">&#43;</div>
+        <div class="label">Record a Sale</div>
+      </div>
+      <div id="cardExpense" class="home-card" role="button" tabindex="0">
+        <div class="icon">&#8722;</div>
+        <div class="label">Record an Expense</div>
+      </div>
+    </div>
+
+    <div id="syncBadge" class="sync-badge">You have unsynced entries — will sync automatically</div>
+
+    <button id="manageProductsLink" class="link-btn">Manage Products</button>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 3 — RECORD A SALE
+       ============================================================ -->
+  <section id="screen-sale" class="screen">
+    <div id="saleMessage" class="message"></div>
+
+    <div id="saleFormFields" style="display:none;">
+      <div class="field">
+        <label for="quantityInput">Quantity <span class="required-mark">*</span></label>
+        <input type="number" id="quantityInput" min="1" placeholder="e.g. 2" inputmode="numeric" required />
+      </div>
+      <div class="field">
+        <label for="notesInput">Notes (optional)</label>
+        <input type="text" id="notesInput" placeholder="Add a note..." />
+      </div>
+      <button id="saveSaleBtn" class="btn btn-primary btn-block">Save Sale</button>
+    </div>
+
+    <h2 class="section-heading">Select a Product</h2>
+
+    <div id="saleLoading" class="spinner-wrap">
+      <div class="spinner"></div>
+    </div>
+
+    <div id="saleProductList" class="product-list"></div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 4 — RECORD AN EXPENSE
+       ============================================================ -->
+  <section id="screen-expense" class="screen">
+    <div id="expenseMessage" class="message"></div>
+
+    <div class="field">
+      <label for="descriptionInput">Description</label>
+      <input type="text" id="descriptionInput" placeholder="e.g. Flour and sugar" />
+    </div>
+    <div class="field">
+      <label for="amountInput">Amount</label>
+      <input type="number" id="amountInput" min="0" step="0.01" placeholder="0.00" inputmode="decimal" />
+    </div>
+    <button id="saveExpenseBtn" class="btn btn-primary btn-block">Save Expense</button>
+  </section>
+
+  <!-- ============================================================
+       SCREEN 5 — MANAGE PRODUCTS
+       ============================================================ -->
+  <section id="screen-products" class="screen">
+    <div id="productsMessage" class="message"></div>
+
+    <div class="add-product-form">
+      <div class="field">
+        <label for="newProductInput">Product Name</label>
+        <input type="text" id="newProductInput" placeholder="e.g. Sourdough Loaf" />
+      </div>
+      <div class="field">
+        <label for="newProductSizeInput">Size (optional)</label>
+        <input type="text" id="newProductSizeInput" placeholder="e.g. 250ml, Large, XL" />
+      </div>
+      <div class="field">
+        <label for="newProductPriceInput">Price (optional)</label>
+        <input type="number" id="newProductPriceInput" min="0" step="0.01" inputmode="decimal" placeholder="0.00" />
+      </div>
+      <button id="addProductBtn" class="btn btn-primary btn-block">Add Product</button>
+    </div>
+
+    <h2 class="section-heading">Current Products</h2>
+
+    <div id="productsLoading" class="spinner-wrap">
+      <div class="spinner"></div>
+    </div>
+
+    <ul id="productsList" class="simple-list" style="display:none;"></ul>
+  </section>
+
+  <!-- ============================================================
+       FOOTER CREDIT — lives outside the screen toggles, so it is
+       always rendered below whichever screen is active.
+       ============================================================ -->
+  <footer class="app-footer">
+    App by <a href="https://digiwizr.com/" target="_blank" rel="noopener noreferrer">Digiwizr</a>
+  </footer>
+
+</div>
+
+<!-- ============================================================
+     iOS SAFARI "ADD TO HOME SCREEN" BANNER
+     Shown only on iOS Safari when the app is not already installed.
+     Toggled by app.js; dismissal is remembered in localStorage.
+     ============================================================ -->
+<div id="iosInstallBanner" class="ios-install-banner">
+  <div class="ios-banner-content">
+    <svg class="ios-banner-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 3v12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 7l4-4 4 4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 12v7a2 2 0 002 2h8a2 2 0 002-2v-7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="ios-banner-text">
+      Install this app: tap the Share button below then select <strong>Add to Home Screen</strong>
+    </span>
+    <svg class="ios-banner-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 4v14" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 13l6 6 6-6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <button id="iosBannerClose" class="ios-banner-close" aria-label="Dismiss install instructions">&times;</button>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // Register the service worker so the app shell is cached and works offline
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => {
+        console.warn('Service worker registration failed:', err);
+      });
+    });
+  }
+</script>
+</body>
+</html>
